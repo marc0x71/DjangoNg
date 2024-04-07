@@ -45,19 +45,19 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'corsheaders',
     'rest_framework',
-    'my_app'
+    'my_app',
+    'my_auth',
 ]
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'my_auth.authentication.SafeJWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
-    ),
+        'rest_framework.permissions.IsAuthenticated', 
+    )
 }
 
 MIDDLEWARE = [
@@ -197,3 +197,8 @@ CORS_ALLOW_HEADERS = (
     "x-csrftoken",
     "x-requested-with",
 )
+
+
+# JWT
+AUTH_USER_MODEL = 'my_auth.User'
+REFRESH_TOKEN_SECRET = SECRET_KEY
