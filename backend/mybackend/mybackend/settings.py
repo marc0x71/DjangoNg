@@ -56,7 +56,7 @@ REST_FRAMEWORK = {
         'my_auth.authentication.SafeJWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated', 
+        #'rest_framework.permissions.IsAuthenticated', 
     )
 }
 
@@ -202,3 +202,6 @@ CORS_ALLOW_HEADERS = (
 # JWT
 AUTH_USER_MODEL = 'my_auth.User'
 REFRESH_TOKEN_SECRET = SECRET_KEY
+TOKEN_CREATION_EXPIRATION = 900
+TOKEN_REFRESH_EXPIRATION = 86400
+

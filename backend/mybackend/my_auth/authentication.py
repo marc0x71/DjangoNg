@@ -12,18 +12,13 @@ class CSRFCheck(CsrfViewMiddleware):
         # Return the failure reason instead of an HttpResponse
         return reason
 
-def get_authorization_header(request):
-    auth = request.headers.get('Authorization', b'')
-    if isinstance(auth, str):
-        auth = auth.encode(HTTP_HEADER_ENCODING)
-    return auth
-
 class SafeJWTAuthentication(BaseAuthentication):
     
     keyword = 'Token'
     
     def authenticate(self, request):
 
+        # headers/Authorization = 'Token xxxxxxxxxxxxxxxxxxxxxxxx'
         User = get_user_model()
         authorization_header = request.headers.get('Authorization', b'')
 
@@ -36,7 +31,6 @@ class SafeJWTAuthentication(BaseAuthentication):
             return None
         
         try:
-            # header = 'Token xxxxxxxxxxxxxxxxxxxxxxxx'
             access_token = data[1]
             payload = jwt.decode(
                 access_token, settings.SECRET_KEY, algorithms=['HS256'])
@@ -57,22 +51,4 @@ class SafeJWTAuthentication(BaseAuthentication):
         if not user.is_active:
             raise exceptions.AuthenticationFailed('User is inactive')
 
-        # self.enforce_csrf(request)
-        
         return (user, None)
-
-    def enforce_csrf(self, request):
-        """
-        Enforce CSRF validation
-        """
-        def dummy_get_response(request):  # pragma: no cover
-            return None
-
-        check = CSRFCheck()
-        # populates request.META['CSRF_COOKIE'], which is used in process_view()
-        check.process_request(request)
-        reason = check.process_view(request, None, (), {})
-        print(reason)
-        if reason:
-            # CSRF failed, bail with explicit error message
-            raise exceptions.PermissionDenied('CSRF Failed: %s' % reason)
